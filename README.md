@@ -11,7 +11,7 @@ See [#6945](https://github.com/containers/podman/issues/6945) for a related issu
 ### Steps to reproduce the issue
 
 ```
- git clone https://github.com/arbrsts/vite-react-nginx-slow-load-reproducible-example
+ git clone https://github.com/arbrsts/nginx-rootless-podman-poor-performance-reproducible-example
  podman build ./nginx/. -t slow-load
  podman run -p 4000:4000 slow-load
  npm i
