@@ -1,27 +1,19 @@
-# React + TypeScript + Vite
+# Rootless podman and slirp4netns slow performance with NGINX (~5 second reponse) [#20465](https://github.com/containers/podman/issues/20465)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Issue Description
 
-Currently, two official plugins are available:
+NGINX has poor performance when running under rootless podman and slirp4netns
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Lowering the MTU to 1500 from the podman default of 65520 with `--network slirp4netns:mtu=1500` fixes the issue. Strangely, after the container is ran  once with the `--network slirp4netns:mtu=1500` option, NGINX container works fine even with the option removed.
 
-## Expanding the ESLint configuration
+See [#6945](https://github.com/containers/podman/issues/6945) for a related issue.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Steps to reproduce the issue
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
 ```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+ git clone https://github.com/arbrsts/vite-react-nginx-slow-load-reproducible-example
+ podman build ./nginx/. -t slow-load
+ podman run -p 4000:4000 slow-load
+ npm i
+ npm run dev
+```
